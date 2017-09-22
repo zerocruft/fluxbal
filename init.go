@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	flgPort int
+	flgPort   int
 	waitGroup sync.WaitGroup
 )
 
@@ -15,7 +15,6 @@ func init() {
 	waitGroup = sync.WaitGroup{}
 	waitGroup.Add(1)
 }
-
 
 func parseFlags() {
 	flag.IntVar(&flgPort, "port", 8282, "Port for flux connection")
