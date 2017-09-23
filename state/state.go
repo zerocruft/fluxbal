@@ -1,10 +1,11 @@
 package state
 
 import (
-	"github.com/zerocruft/capacitor"
 	"sort"
 	"sync"
 	"time"
+
+	"github.com/zerocruft/capacitor"
 )
 
 var (
@@ -26,7 +27,7 @@ type trackedNode struct {
 func AddNode(node capacitor.FluxNode, numberOfConnections int) {
 	mutex.Lock()
 	defer mutex.Unlock()
-	nodes[node.Address] = trackedNode{
+	nodes[node.ClientEndpoint] = trackedNode{
 		Node:        node,
 		LastPing:    time.Now(),
 		Connections: numberOfConnections,

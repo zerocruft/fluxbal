@@ -3,13 +3,14 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
-	"github.com/zerocruft/capacitor"
-	"github.com/zerocruft/fluxbal/state"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/gorilla/mux"
+	"github.com/zerocruft/capacitor"
+	"github.com/zerocruft/fluxbal/state"
 )
 
 func main() {
@@ -33,12 +34,12 @@ func listener() {
 
 func handleFluxRequest(response http.ResponseWriter, request *http.Request) {
 	lightestNode := state.GetNodeWithLightestLoad()
-	if lightestNode.Address == "" {
+	if lightestNode.ClientEndpoint == "" {
 		response.WriteHeader(http.StatusNoContent)
 		return
 	}
 
-	http.Redirect(response, request, "ws://"+lightestNode.Address, 302)
+	http.Redirect(response, request, "ws://"+lightestNode.ClientEndpoint, 302)
 }
 
 func handleControlClusterPing(response http.ResponseWriter, request *http.Request) {
@@ -61,6 +62,8 @@ func handleControlClusterPing(response http.ResponseWriter, request *http.Reques
 		return
 	}
 
+	fmt.Println(ping)
+
 	state.AddNode(ping.Node, ping.NumberOfConnections)
 
 	pong := capacitor.FluxPong{
@@ -80,7 +83,8 @@ func background() {
 		time.Sleep(5 * time.Second)
 		for _, node := range state.CopyOfNodes() {
 			if time.Now().Add(-20 * time.Second).After(node.LastPing) {
-				state.RemoveNode(node.Node.Address)
+				fmt.Println("Removing node: " + node.Node.Name)
+				state.RemoveNode(node.Node.ClientEndpoint)
 			}
 		}
 	}
